@@ -1,0 +1,148 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Dairy{% endblock %}
+
+{% block content %}
+
+<section class="home-page">
+
+    <!-- Welcome Section -->
+    <div class="home-hero">
+        <div class="hero-content">
+            <span class="hero-label">🥛 SMART DAIRY MANAGEMENT</span>
+
+            <h1>
+                Smart Dairy Collection
+                <span>&amp; Payment Management System</span>
+            </h1>
+
+            <p class="hero-description">
+                A simple and reliable way to manage farmer registrations,
+                daily milk collection, milk quality records, and payments
+                in one organized system.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="{{ url_for('farmer_login') }}"
+                   class="home-btn home-btn-primary">
+                    Farmer Login
+                </a>
+
+                <a href="{{ url_for('farmer_register') }}"
+                   class="home-btn home-btn-outline">
+                    Register as Farmer
+                </a>
+            </div>
+
+            <p class="hero-note">
+                New farmer? Register first and wait for admin approval.
+            </p>
+        </div>
+
+        <div class="hero-illustration" aria-label="Milk and dairy illustration">
+            <div class="milk-circle">
+                <span class="milk-icon">🥛</span>
+                <span class="cow-icon">🐄</span>
+            </div>
+            <div class="illustration-caption">
+                <strong>Better Records. Better Management.</strong>
+                <span>Simple • Organized • Transparent</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="home-features">
+        <div class="section-heading">
+            <span class="section-kicker">OUR SYSTEM</span>
+            <h2>Everything in One Place</h2>
+            <p>Manage daily dairy activities with a clear and organized workflow.</p>
+        </div>
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+                <div class="feature-icon">👨‍🌾</div>
+                <h3>Farmer Management</h3>
+                <p>
+                    Register farmer details and check registration
+                    and RFID assignment status.
+                </p>
+                <a href="{{ url_for('farmer_register') }}">
+                    Farmer Registration →
+                </a>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">🥛</div>
+                <h3>Milk Collection</h3>
+                <p>
+                    Maintain milk collection records, quantity,
+                    FAT, SNF, rates, and collection amounts.
+                </p>
+                <a href="{{ url_for('farmer_login') }}">
+                    View Farmer Login →
+                </a>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Payment Management</h3>
+                <p>
+                    Keep payment transactions organized and
+                    make it easier to review payment records.
+                </p>
+                <a href="{{ url_for('farmer_login') }}">
+                    View Payment Records →
+                </a>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- Access Section -->
+    <section class="home-access">
+        <div class="access-content">
+            <div>
+                <span class="section-kicker">GET STARTED</span>
+                <h2>Choose Your Access</h2>
+                <p>
+                    Select the appropriate option to continue to the system.
+                </p>
+            </div>
+
+            <div class="access-actions">
+                <a href="{{ url_for('farmer_login') }}" class="access-link">
+                    <span class="access-emoji">👨‍🌾</span>
+                    <span>
+                        <strong>Farmer Login</strong>
+                        <small>Access your milk and payment records</small>
+                    </span>
+                    <span class="access-arrow">→</span>
+                </a>
+
+                <a href="{{ url_for('check_rfid') }}" class="access-link">
+                    <span class="access-emoji">🏷️</span>
+                    <span>
+                        <strong>Check RFID Status</strong>
+                        <small>Check your assigned RFID information</small>
+                    </span>
+                    <span class="access-arrow">→</span>
+                </a>
+
+                <a href="{{ url_for('admin_login') }}" class="access-link">
+                    <span class="access-emoji">🔐</span>
+                    <span>
+                        <strong>Admin Login</strong>
+                        <small>Manage farmers, collections, and payments</small>
+                    </span>
+                    <span class="access-arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</section>
+
+{% endblock %}

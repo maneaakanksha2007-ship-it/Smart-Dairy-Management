@@ -1,0 +1,75 @@
+
+{% extends "base.html" %}
+
+{% block title %}Farmer Login - Smart Dairy{% endblock %}
+
+{% block content %}
+<div class="login-container">
+
+    <div class="login-card">
+
+        <h1>Farmer Login</h1>
+
+        <p class="login-subtitle">
+            Welcome to Smart Dairy Collection &amp; Payment Management System.
+        </p>
+
+        <form method="POST" action="{{ url_for('farmer_login') }}">
+
+            <!-- RFID Number -->
+            <div class="form-group">
+                <label for="rfid">RFID Number</label>
+
+                <input
+                    type="text"
+                    id="rfid"
+                    name="rfid"
+                    placeholder="Enter your RFID number"
+                    maxlength="50"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="btn btn-primary login-btn">
+                Login as Farmer
+            </button>
+
+        </form>
+
+        <!-- Farmer Registration Link -->
+        
+<p class="login-note">
+    New farmer?
+    <a href="{{ url_for('farmer_register') }}">Register here</a>
+</p>
+
+<p class="login-note">
+    Don't know your RFID?
+    <a href="{{ url_for('check_rfid') }}">Check using mobile number</a>
+</p>
+
+<p class="login-note">
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</p>
+
+
+    </div>
+
+</div>
+{% endblock %}

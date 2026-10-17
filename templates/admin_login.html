@@ -1,0 +1,53 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin Login - Smart Dairy{% endblock %}
+
+{% block content %}
+<div class="login-container">
+
+    <div class="login-card">
+        <h1>Admin Login</h1>
+        <p class="login-subtitle">
+            Sign in to manage the Smart Dairy system.
+        </p>
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+
+            <div class="form-group">
+                <label for="username">Admin Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter admin username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter admin password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary login-btn">
+                Login as Admin
+            </button>
+
+        </form>
+
+        <p class="login-note">
+            <a href="{{ url_for('home') }}">Back to Home</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}

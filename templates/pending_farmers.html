@@ -1,0 +1,85 @@
+
+{% extends "base.html" %}
+
+{% block title %}Pending Farmer Registrations - Smart Dairy{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="dashboard-header">
+        <h1>Pending Farmer Registrations</h1>
+        <p>Assign an RFID number to approve each farmer.</p>
+    </div>
+
+    <div class="card">
+
+        {% if farmers %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Farmer ID</th>
+                        <th>Farmer Name</th>
+                        <th>Mobile Number</th>
+                        <th>Address</th>
+                        <th>RFID Assignment</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for farmer in farmers %}
+                    <tr>
+                        <td>{{ farmer.Farmer_ID }}</td>
+                        <td>{{ farmer.Farmer_Name }}</td>
+                        <td>{{ farmer.Mobile_No or 'Not provided' }}</td>
+                        <td>{{ farmer.Address or 'Not provided' }}</td>
+                        <td>
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'approve_farmer',
+                                    farmer_id=farmer.Farmer_ID
+                                ) }}"
+                            >
+                                <input
+                                    type="text"
+                                    name="rfid"
+                                    placeholder="Enter unique RFID"
+                                    maxlength="50"
+                                    required
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Assign &amp; Approve
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <h3>No Pending Farmers</h3>
+            <p>There are no registrations waiting for approval.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="dashboard-actions">
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="btn btn-secondary"
+        >
+            Back to Admin Dashboard
+        </a>
+    </div>
+
+</div>
+{% endblock %}

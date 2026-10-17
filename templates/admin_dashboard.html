@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Smart Dairy{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the Smart Dairy Collection & Payment Management System.</p>
+    </div>
+
+    <!-- Dashboard Statistics -->
+    <div class="dashboard-cards">
+
+        <div class="dashboard-card">
+            <h3>Total Farmers</h3>
+            <p class="dashboard-number">{{ farmer_count }}</p>
+            <p>Registered farmers</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Milk Collections</h3>
+            <p class="dashboard-number">{{ milk_count }}</p>
+            <p>Total milk collection records</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Pending Payments</h3>
+            <p class="dashboard-number">{{ pending_payment_count }}</p>
+            <p>Payments awaiting processing</p>
+        </div>
+
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="card">
+        <h2>Farmer Management</h2>
+        <p>Review new registrations and approve farmers by assigning their RFID numbers.</p>
+
+        <a href="{{ url_for('pending_farmers') }}" class="btn btn-primary">
+            Review New Farmer Registrations
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>Quick Actions</h2>
+        <p>Use the available options to manage the system.</p>
+
+        <div class="dashboard-actions">
+            <a href="{{ url_for('pending_farmers') }}" class="btn btn-secondary">
+                View Pending Farmers
+            </a>
+
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                Logout
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

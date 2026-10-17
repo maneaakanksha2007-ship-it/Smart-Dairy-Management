@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Dairy{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="navbar-container">
+        <a href="{{ url_for('home') }}" class="logo">🥛 Smart Dairy</a>
+
+        <nav class="nav-links">
+            {% if session.get('role') == 'admin' %}
+               <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+                <a href="{{ url_for('pending_farmers') }}">Pending Farmers</a>
+                <a href="{{ url_for('milk_collection') }}">Milk Collection</a>
+                <a href="{{ url_for('milk_records') }}">Milk Records</a>
+                <a href="{{ url_for('payments') }}">Payments</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+
+            {% elif session.get('role') == 'farmer' %}
+                <a href="{{ url_for('farmer_dashboard') }}">Farmer Dashboard</a>
+<a href="{{ url_for('farmer_records') }}">My Milk Records</a>
+<a href="{{ url_for('farmer_payments') }}">My Payments</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+
+            {% else %}
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('farmer_login') }}">Farmer Login</a>
+                <a href="{{ url_for('farmer_register') }}">Farmer Registration</a>
+                <a href="{{ url_for('admin_login') }}">Admin Login</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for message in messages %}
+                    <p class="flash-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p>&copy; 2026 Smart Dairy Collection &amp; Payment Management System</p>
+</footer>
+
+<script>
+    // If a browser restores a cached page using Back/Forward,
+    // reload it so the server can verify the current session.
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+
+{% if session.get('role') == 'admin' %}
+<script>
+    // Requested behavior: pressing browser Back from an admin
+    // page logs the admin out rather than returning to an old page.
+    history.pushState({ adminPage: true }, "", location.href);
+
+    window.addEventListener("popstate", function () {
+        window.location.replace("{{ url_for('logout') }}");
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block title %}Milk Records{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <h1>Milk Collection Records</h1>
+
+    {% if records %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Farmer</th>
+                    <th>RFID</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Quantity (L)</th>
+                    <th>FAT (%)</th>
+                    <th>SNF (%)</th>
+                    <th>Rate (₹/L)</th>
+                    <th>Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.Farmer_Name }}</td>
+                    <td>{{ record.RFID_No }}</td>
+                    <td>{{ record.Collection_Date }}</td>
+                    <td>{{ record.Collection_Time }}</td>
+                    <td>{{ record.Quantity }}</td>
+                    <td>{{ record.Fat }}</td>
+                    <td>{{ record.SNF }}</td>
+                    <td>{{ record.Rate_Per_Litre }}</td>
+                    <td>{{ record.Total_Amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No milk collection records are available yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('milk_collection') }}">Add Milk Collection</a>
+</section>
+{% endblock %}

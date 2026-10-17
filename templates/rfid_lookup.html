@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+
+{% block title %}Check RFID - Smart Dairy{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h1>Check Assigned RFID</h1>
+
+        <p class="login-subtitle">
+            Enter the mobile number and password used during registration.
+        </p>
+
+        <form method="POST" action="{{ url_for('check_rfid') }}">
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    maxlength="15"
+                    autocomplete="tel"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Registration Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary login-btn">
+                Check RFID Status
+            </button>
+        </form>
+
+        {% if result %}
+        <div class="rfid-result">
+            <h2>Hello, {{ result.name }}!</h2>
+
+            {% if result.status == 'Approved' and result.rfid %}
+                <p>Your registration is approved.</p>
+                <p>Your assigned RFID number is:</p>
+                <p class="rfid-number">{{ result.rfid }}</p>
+                <p>Use this RFID number and your password to log in.</p>
+            {% elif result.status == 'Pending' %}
+                <p>Your registration is still pending admin approval.</p>
+                <p>Your RFID has not been assigned yet.</p>
+            {% else %}
+                <p>Your registration is not currently approved.</p>
+                <p>Please contact the dairy administrator.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <p class="login-note">
+            Have your RFID? <a href="{{ url_for('farmer_login') }}">Farmer Login</a>
+        </p>
+
+        <p class="login-note">
+            <a href="{{ url_for('home') }}">Back to Home</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

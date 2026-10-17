@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container page-container">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">SMART DAIRY</p>
+      <h1>{% if is_admin %}Payment Management{% else %}My Payments{% endif %}</h1>
+      <p class="page-subtitle">View milk bills, payments made, and remaining balance.</p>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-list">
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if is_admin %}
+    <section class="panel payment-form-panel">
+      <h2>Record a Farmer Payment</h2>
+      <p class="muted">Select a farmer to automatically load the total bill, amount already paid, and amount still due.</p>
+
+      <form method="post" action="{{ url_for('payments') }}" id="paymentForm" class="form-grid">
+        <div class="form-group full-width">
+          <label for="farmer_id">Select Approved Farmer</label>
+          <select id="farmer_id" name="farmer_id" required>
+            <option value="">-- Select farmer --</option>
+            {% for farmer in farmers %}
+              <option value="{{ farmer.Farmer_ID }}">
+                {{ farmer.Farmer_Name }} — RFID: {{ farmer.RFID_No or "Not assigned" }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div id="balanceMessage" class="balance-message full-width" aria-live="polite">
+          Select a farmer to see their current balance.
+        </div>
+
+        <div class="summary-cards full-width" id="selectedFarmerSummary" hidden>
+          <div class="summary-card">
+            <span>Total milk bill</span>
+            <strong id="selectedTotalBill">₹0.00</strong>
+          </div>
+          <div class="summary-card">
+            <span>Already paid</span>
+            <strong id="selectedTotalPaid">₹0.00</strong>
+          </div>
+          <div class="summary-card summary-card-highlight">
+            <span>Amount to pay</span>
+            <strong id="selectedOutstanding">₹0.00</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="amount_paid">Payment Amount (₹)</label>
+          <input id="amount_paid" name="amount_paid" type="number"
+                 min="0.01" step="0.01" required placeholder="Select a farmer first" disabled>
+          <small class="field-help">Automatically fills the outstanding balance. You may enter a smaller amount for a partial payment.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="payment_date">Payment Date</label>
+          <input id="payment_date" name="payment_date" type="date"
+                 value="{{ today }}" required>
+        </div>
+
+        <div class="form-actions full-width">
+          <button id="submitPaymentButton" type="submit" disabled>Record Payment</button>
+        </div>
+      </form>
+    </section>
+  {% endif %}
+
+  {% if summaries %}
+    <section class="panel">
+      <h2>Bill Summary</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              {% if is_admin %}<th>Farmer</th><th>RFID</th>{% endif %}
+              <th>Total Milk Bill</th>
+              <th>Total Paid</th>
+              <th>Outstanding Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in summaries %}
+            <tr>
+              {% if is_admin %}
+                <td>{{ item.Farmer_Name }}</td>
+                <td>{{ item.RFID_No or "Not assigned" }}</td>
+              {% endif %}
+              <td>₹{{ "%.2f"|format(item.Total_Bill) }}</td>
+              <td>₹{{ "%.2f"|format(item.Total_Paid) }}</td>
+              <td><strong>₹{{ "%.2f"|format(item.Outstanding) }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="panel">
+    <h2>Payment Transactions</h2>
+    {% if payment_records %}
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              {% if is_admin %}<th>Farmer</th>{% endif %}
+              <th>Date</th>
+              <th>Amount Paid</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for payment in payment_records %}
+            <tr>
+              <td>{{ payment.Payment_ID }}</td>
+              {% if is_admin %}<td>{{ payment.Farmer_Name }}</td>{% endif %}
+              <td>{{ payment.Payment_Date }}</td>
+              <td>₹{{ "%.2f"|format(payment.Amount_Paid) }}</td>
+              <td><span class="status-pill {{ payment.Payment_Status|lower }}">{{ payment.Payment_Status }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty-state">No payment transactions found.</p>
+    {% endif %}
+  </section>
+</div>
+
+{% if is_admin %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const farmerSelect = document.getElementById("farmer_id");
+  const amountInput = document.getElementById("amount_paid");
+  const submitButton = document.getElementById("submitPaymentButton");
+  const balanceMessage = document.getElementById("balanceMessage");
+  const summary = document.getElementById("selectedFarmerSummary");
+  const totalBill = document.getElementById("selectedTotalBill");
+  const totalPaid = document.getElementById("selectedTotalPaid");
+  const outstanding = document.getElementById("selectedOutstanding");
+
+  function money(value) {
+    return "₹" + Number(value || 0).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function resetSummary(message) {
+    summary.hidden = true;
+    totalBill.textContent = "₹0.00";
+    totalPaid.textContent = "₹0.00";
+    outstanding.textContent = "₹0.00";
+    amountInput.value = "";
+    amountInput.disabled = true;
+    amountInput.placeholder = "Select a farmer first";
+    submitButton.disabled = true;
+    balanceMessage.textContent = message;
+    balanceMessage.className = "balance-message full-width";
+  }
+
+  farmerSelect.addEventListener("change", async function () {
+    const farmerId = farmerSelect.value;
+    if (!farmerId) {
+      resetSummary("Select a farmer to see their current balance.");
+      return;
+    }
+
+    resetSummary("Loading farmer balance...");
+    try {
+      const response = await fetch("/admin/farmer-balance/" + encodeURIComponent(farmerId), {
+        headers: { "Accept": "application/json" },
+        credentials: "same-origin"
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not load balance.");
+
+      totalBill.textContent = money(data.total_bill);
+      totalPaid.textContent = money(data.total_paid);
+      outstanding.textContent = money(data.outstanding);
+      summary.hidden = false;
+
+      if (Number(data.outstanding) <= 0) {
+        amountInput.value = "";
+        amountInput.disabled = true;
+        submitButton.disabled = true;
+        balanceMessage.textContent = "This farmer has no outstanding amount to pay.";
+        balanceMessage.className = "balance-message full-width balance-success";
+      } else {
+        amountInput.disabled = false;
+        amountInput.placeholder = "Enter amount";
+        amountInput.max = Number(data.outstanding).toFixed(2);
+        amountInput.value = Number(data.outstanding).toFixed(2);
+        submitButton.disabled = false;
+        balanceMessage.textContent = "Outstanding amount loaded. The payment amount is filled automatically.";
+        balanceMessage.className = "balance-message full-width balance-success";
+      }
+    } catch (error) {
+      resetSummary(error.message || "Unable to load farmer balance. Please try again.");
+      balanceMessage.className = "balance-message full-width balance-error";
+    }
+  });
+
+  document.getElementById("paymentForm").addEventListener("submit", function (event) {
+    const amount = Number(amountInput.value);
+    const maxAmount = Number(amountInput.max);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > maxAmount) {
+      event.preventDefault();
+      alert("Enter a payment amount greater than ₹0 and no more than the outstanding balance.");
+    }
+  });
+});
+</script>
+{% endif %}
+{% endblock %}

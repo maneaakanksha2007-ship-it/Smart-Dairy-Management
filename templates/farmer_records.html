@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Milk Records{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <h1>My Milk Collection History</h1>
+
+    {% if records %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Quantity (L)</th>
+                    <th>FAT (%)</th>
+                    <th>SNF (%)</th>
+                    <th>Rate (₹/L)</th>
+                    <th>Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.Collection_Date }}</td>
+                    <td>{{ record.Collection_Time }}</td>
+                    <td>{{ record.Quantity }}</td>
+                    <td>{{ record.Fat }}</td>
+                    <td>{{ record.SNF }}</td>
+                    <td>{{ record.Rate_Per_Litre }}</td>
+                    <td>{{ record.Total_Amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>You don't have any milk collection records yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
